@@ -2,10 +2,12 @@ import 'dotenv/config'
 import 'reflect-metadata'
 import { DataSource, DataSourceOptions } from 'typeorm'
 import path from 'path'
+import { Movie } from './entities/movie.entity'
+import { createMovies1677262829241 } from './migrations/1677262829241-createMovies'
 
 const dataSourceConfig = (): DataSourceOptions => {
-    const entitiesPath: string = path.join(__dirname, './entities/**.{ts,js}')
-    const migrationsPath: string = path.join(__dirname, './migrations/**.{ts,js}')
+    const entitiesPath: string = path.join(__dirname, './src/entities/**.{ts,js}')
+    const migrationsPath: string = path.join(__dirname, './src/migrations/**.{ts,js}')
 
     const dbUrl: string | undefined = process.env.DATABASE_URL
 
@@ -20,7 +22,7 @@ const dataSourceConfig = (): DataSourceOptions => {
             type: 'sqlite',
             database: ':memory:',
             synchronize: true,
-            entities: [entitiesPath]
+            entities: [Movie]
         }
     }
     
@@ -29,8 +31,8 @@ const dataSourceConfig = (): DataSourceOptions => {
         url: dbUrl,
         synchronize: false,
         logging: true,
-        migrations: [migrationsPath],
-        entities: [entitiesPath]
+        migrations: [createMovies1677262829241],
+        entities: [Movie]
     }
 }
 
