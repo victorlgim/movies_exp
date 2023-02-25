@@ -12,7 +12,7 @@ const listMoviesService = async (page: number, perPage: number, protocol: string
       take: perPage,
       skip: (page - 1) * perPage,
       order: {
-        name: 'ASC'
+        id: 'ASC'
       }
     })
   

@@ -31,9 +31,12 @@ export const checkDuplicateMovieName = async ( req: Request, res: Response, next
     },
   });
 
-  if (existingMovie) {
-    throw new AppError(`Movie already exists.`, 409);
+  if (movieName) {
+    if (existingMovie) {
+        throw new AppError(`Movie already exists.`, 409);
+      }
   }
+  
 
   next();
 };
