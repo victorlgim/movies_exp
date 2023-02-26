@@ -1,39 +1,59 @@
-import { Repository } from "typeorm"
-import { IMovieReturn, IMoviesReturn } from "../interfaces/movies.interfaces"
-import { returnAllMoviesSchema } from "../schemas/movies.schemas"
-import { AppDataSource } from "../data-source"
-import { Movie } from "../entities/movie.entity"
+import { Repository } from "typeorm";
+import { IMoviesReturn } from "../interfaces/movies.interfaces";
+import { AppDataSource } from "../data-source";
+import { Movie } from "../entities/movie.entity";
 
-
-const listMoviesService = async (page: number, perPage: number, protocol: string, host: string): Promise<IMoviesReturn> => {
-    const movieRepository: Repository<Movie> = AppDataSource.getRepository(Movie)
+const listMoviesService = async (payload: any) => {
+    
+    const movieRepository: Repository<Movie> = AppDataSource.getRepository(Movie);
   
-    const [movies, count] = await movieRepository.findAndCount({
+    const count: number = await movieRepository.count()
+  
+    const page: number = +payload.page > 0 ? +payload.page : 1
+  
+    const perPage: number = Number(payload.perPage) > 0 && Number(payload.perPage) <= 5 ?
+    Number(payload.perPage) : 5
+
+    const sort: keyof Movie = (payload.sort !== 'duration' &&
+    payload.sort !== 'price' ? 'id' : payload.sort) || 'id'
+  
+    let order: any = (payload.order === 'asc' || payload.order === 'desc') ? payload.order : 'ASC';
+  
+    let prevPage: string | null = 
+    page === 1 ? null : `http://localhost:3000/movies?page=${page - 1}&perPage=${perPage}`
+  
+    let nextPage: string | null = 
+    count <= perPage * page ? null : `http://localhost:3000/movies?page=${page + 1}&perPage=${perPage}`
+  
+    let findMovies: any
+    let orderKey: 'duration' | 'price' | 'id'
+    
+    if (sort === 'duration') {
+      orderKey = 'duration'
+    } else if (sort === 'price') {
+      orderKey = 'price'
+    } else {
+      orderKey = 'id'
+      order = undefined 
+    }
+    
+    findMovies = await movieRepository.find({
       take: perPage,
-      skip: (page - 1) * perPage,
-      order: {
-        id: 'ASC'
+      skip: perPage * (page - 1),       
+      order: { 
+        [orderKey]: order 
       }
     })
   
-    const totalPages = Math.ceil(count / perPage)
-    const prevPage = page > 1 ? `${protocol}://${host}/movies?page=${page - 1}&perPage=${perPage}` : null
-    const nextPage = page < totalPages ? `${protocol}://${host}/movies?page=${page + 1}&perPage=${perPage}` : null
-  
     const movie: IMoviesReturn = {
-      prevPage,
-      nextPage,
-      count,
-      data: movies.map(movie => ({
-        id: movie.id,
-        name: movie.name,
-        description: movie.description ?? null,
-        duration: movie.duration,
-        price: movie.price
-      }))
+      prevPage: prevPage,
+      nextPage: nextPage,
+      count: count,
+      data: findMovies
     }
-    console.log(movie)
+  
     return movie
   }
   
-  export { listMoviesService }
+  export default listMoviesService
+

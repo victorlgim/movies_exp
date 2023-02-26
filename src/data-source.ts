@@ -1,13 +1,10 @@
 import 'dotenv/config'
 import 'reflect-metadata'
 import { DataSource, DataSourceOptions } from 'typeorm'
-import path from 'path'
 import { Movie } from './entities/movie.entity'
 import { createMovies1677262829241 } from './migrations/1677262829241-createMovies'
 
 const dataSourceConfig = (): DataSourceOptions => {
-    const entitiesPath: string = path.join(__dirname, './src/entities/**.{ts,js}')
-    const migrationsPath: string = path.join(__dirname, './src/migrations/**.{ts,js}')
 
     const dbUrl: string | undefined = process.env.DATABASE_URL
 

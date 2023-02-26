@@ -4,7 +4,6 @@ import ensureDataIsValidMiddleware from "../middlewares/ensureDataIsValid.middle
 import { ensureMovieExistsMiddleware, checkDuplicateMovieName } from "../middlewares/ensureMovieExists.middleware";
 import { editMovieSchema, movieSchema } from "../schemas/movies.schemas";
 
-
 const moviesRoutes: Router = Router();
 
 moviesRoutes.post("", ensureDataIsValidMiddleware(movieSchema), checkDuplicateMovieName, createMovieController);

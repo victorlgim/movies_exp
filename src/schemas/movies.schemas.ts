@@ -26,7 +26,8 @@ const returnAllMoviesSchema = z.object({
         price: z.number()
       })
     )
-  });
+  }).array(); 
+
 export {
     movieSchema,
     returnMovieSchema,

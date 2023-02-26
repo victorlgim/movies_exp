@@ -1,5 +1,5 @@
 import { Repository, DeepPartial } from "typeorm"
-import { IMovieReturn, IMovieEdit } from "../interfaces/movies.interfaces"
+import { IMovieReturn } from "../interfaces/movies.interfaces"
 import { Movie } from "../entities/movie.entity"
 import { returnMovieSchema } from "../schemas/movies.schemas"
 import { AppDataSource } from "../data-source"

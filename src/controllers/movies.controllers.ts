@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { Movie } from "../entities/movie.entity";
 import createMovieService from "../services/createMovie.service";
-import { listMoviesService } from "../services/listMovies.service";
-import { IMoviesReturn } from "../interfaces/movies.interfaces";
 import updateMovieService from "../services/updateMovie.service";
 import { DeepPartial } from "typeorm";
 import deleteMovieService from "../services/deleteMovie.service";
+import listMoviesService from "../services/listMovies.service";
 
 const createMovieController = async (req: Request, res: Response) => {
   const movieData: Movie = req.body;
@@ -17,51 +16,41 @@ const createMovieController = async (req: Request, res: Response) => {
     name: newMovie.name,
     description: newMovie.description,
     duration: newMovie.duration,
-    price: newMovie.price
+    price: newMovie.price,
   });
 };
 
 const listMoviesController = async (req: Request, res: Response) => {
+  const params = req.query;
+  const movies = await listMoviesService(params);
 
-    const { page, perPage } = req.query
-    const protocol = req.protocol
-    const host = 'localhost:3000'
-
-    const pageNum = page ? parseInt(page as string) : 1;
-    const perPageNum = perPage ? parseInt(perPage as string) : 10;
-
-    const movie: IMoviesReturn = await listMoviesService(pageNum, perPageNum, protocol, host);
-
-    return res.json(movie)
-
-}
+  return res.status(200).json(movies);
+};
 
 const updateMovieController = async (req: Request, res: Response) => {
+  const movieData: DeepPartial<Movie> = req.body;
+  const idMovie = parseInt(req.params.id);
 
-    const movieData: DeepPartial<Movie> = req.body
-    const idMovie = parseInt(req.params.id)
+  const updatedMovie = await updateMovieService(movieData, idMovie);
 
-    const updatedMovie = await updateMovieService(movieData, idMovie)
-
-    return res.json({
-        id: updatedMovie.id,
-        name: updatedMovie.name,
-        description: updatedMovie.description,
-        duration: updatedMovie.duration,
-        price: updatedMovie.price
-    })
-}
+  return res.json({
+    id: updatedMovie.id,
+    name: updatedMovie.name,
+    description: updatedMovie.description,
+    duration: updatedMovie.duration,
+    price: updatedMovie.price,
+  });
+};
 
 const deleteMovieController = async (req: Request, res: Response) => {
+  await deleteMovieService(parseInt(req.params.id));
 
-    await deleteMovieService(parseInt(req.params.id))
+  return res.status(204).send();
+};
 
-    return res.status(204).send()
-}
-
-export { 
-    createMovieController,
-    listMoviesController,
-    updateMovieController,
-    deleteMovieController
- };
+export {
+  createMovieController,
+  listMoviesController,
+  updateMovieController,
+  deleteMovieController,
+};
