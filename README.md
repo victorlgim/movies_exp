@@ -257,4 +257,3 @@ Esse serviço precisa possuir uma API REST para que os demais serviços consigam
   "message": "Movie not found."
 }
 ```
-
